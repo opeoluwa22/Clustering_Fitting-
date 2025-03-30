@@ -36,8 +36,10 @@ def plot_relational_plot(df):
         linewidths=0.8
     )
     # Set axis labels
-    ax.set_xlabel('Total Waste (Tons)', fontsize=14, fontweight='bold', labelpad=10)
-    ax.set_ylabel('Economic Loss (Million $)', fontsize=14, fontweight='bold', labelpad=10)
+    ax.set_xlabel('Total Waste (Tons)', 
+                  fontsize=14, fontweight='bold', labelpad=10)
+    ax.set_ylabel('Economic Loss (Million $)', 
+                  fontsize=14, fontweight='bold', labelpad=10)
     # Set plot title
     ax.set_title('Economic Loss vs. Total Waste', fontsize=16, fontweight='bold', pad=15)
     ax.grid(True, linestyle='--', alpha=0.6, which='both', color='gray', linewidth=0.5)
@@ -68,8 +70,10 @@ def plot_categorical_plot(df):
     ax.set_ylabel('Total Waste (Tons)', fontsize=14, fontweight='bold', labelpad=10)
     ax.tick_params(axis='x', rotation=45, labelsize=12)
     # Set title
-    ax.set_title('Total Food Waste by Category', fontsize=18, fontweight='bold', pad=20)
-    ax.grid(True, linestyle='--', alpha=0.6, which='both', axis='y', color='gray', linewidth=0.5)
+    ax.set_title('Total Food Waste by Category', 
+                 fontsize=18, fontweight='bold', pad=20)
+    ax.grid(True, linestyle='--', alpha=0.6, which='both', 
+            axis='y', color='gray', linewidth=0.5)
     plt.tight_layout()
     plt.savefig('food_waste_by_category.png')
     plt.show()
@@ -78,7 +82,8 @@ def plot_categorical_plot(df):
 
 def plot_statistical_plot(df):
     """
-    Visualizes the distribution of average waste per capita (Kg) across different countries using a box plot.
+    Visualizes the distribution of average waste per capita 
+    (Kg) across different countries using a box plot.
     """
     fig, ax = plt.subplots(figsize=(12, 8))
     # Create the box plot
@@ -95,11 +100,14 @@ def plot_statistical_plot(df):
         dodge=False
     )
     # Set title and labels
-    ax.set_title('Distribution of Average Waste per Capita by Country', fontsize=18, fontweight='bold', pad=20)
+    ax.set_title('Distribution of Average Waste per Capita by Country', 
+                 fontsize=18, fontweight='bold', pad=20)
     ax.set_xlabel('Country', fontsize=14, fontweight='bold', labelpad=10)
-    ax.set_ylabel('Avg Waste per Capita (Kg)', fontsize=14, fontweight='bold', labelpad=10)
+    ax.set_ylabel('Avg Waste per Capita (Kg)', fontsize=14, 
+                  fontweight='bold', labelpad=10)
     ax.tick_params(axis='x', rotation=45, labelsize=12)
-    ax.grid(True, linestyle='--', alpha=0.6, which='both', axis='y', color='gray', linewidth=0.5)
+    ax.grid(True, linestyle='--', alpha=0.6, which='both', 
+            axis='y', color='gray', linewidth=0.5)
     plt.tight_layout()
     plt.savefig('waste_distribution.png')
     plt.show()
@@ -120,7 +128,8 @@ def statistical_analysis(df, col: str):
 
 def preprocessing(df):
     """
-    Prepare the data by detecting missing values, generating summary statistics, and assessing correlations.
+    Prepare the data by detecting missing values, generating summary statistics, 
+    and assessing correlations.
     """
     # Display the first few rows of the data
     print("\nPreview of the Data:")
@@ -168,7 +177,8 @@ def perform_clustering(df, col1, col2):
         """
         fig, ax = plt.subplots(dpi=144)
         ax.plot(range(min_k, max_k + 1), wcss, 'kx-')
-        ax.scatter(best_n, wcss[best_n - min_k], marker='o', color='red', facecolors='none', s=50)
+        ax.scatter(best_n, wcss[best_n - min_k], 
+                   marker='o', color='red', facecolors='none', s=50)
         ax.set_xlabel('k')
         ax.set_xlim(min_k, max_k)
         plt.title('Elbow Plot', fontsize=14, fontweight='bold', pad=20)
@@ -227,8 +237,10 @@ def plot_clustered_data(labels, xy, cluster_centers_x, cluster_centers_y, center
     cmap = ListedColormap(colors)
 
     fig, ax = plt.subplots(dpi=144)
-    scatter = ax.scatter(xy[:, 0], xy[:, 1], c=labels, cmap=cmap, marker='o', label='Data Points')
-    ax.scatter(cluster_centers_x, cluster_centers_y, c=center_labels, cmap=cmap, marker='x', s=100, label='Cluster Centers')
+    scatter = ax.scatter(xy[:, 0], xy[:, 1], c=labels, 
+                         cmap=cmap, marker='o', label='Data Points')
+    ax.scatter(cluster_centers_x, cluster_centers_y, 
+               c=center_labels, cmap=cmap, marker='x', s=100, label='Cluster Centers')
     colorbar = fig.colorbar(scatter, ax=ax)
     colorbar.set_ticks(unique_labels)
     ax.set_xlabel('Economic Loss (Million $)')
@@ -264,15 +276,17 @@ def plot_fitted_data(data, x, y, model):
     r_squared = model.score(data[['Total Waste (Tons)']], data['Economic Loss (Million $)'])
     ax.set_xlabel('Total Waste (Tons)', fontsize=14, fontweight='bold')
     ax.set_ylabel('Economic Loss (Million $)', fontsize=14, fontweight='bold')
-    ax.set_title(f"Economic Loss (Million $) vs. Total Waste (Tons)", fontsize=16, fontweight='bold', pad=15)
+    ax.set_title(f"Economic Loss (Million $) vs. Total Waste (Tons)", 
+                 fontsize=16, fontweight='bold', pad=15)
     ax.legend()
     ax.grid(True, linestyle='--', alpha=0.6, which='both',
                 axis='y', color='gray', linewidth=0.5)
     plt.savefig('fitting_improved.png', dpi=300, bbox_inches='tight')
     plt.show()
 
+
 def main():
-    df = pd.read_csv('dataset.csv', index_col='Year').loc[[2024]]
+    df = pd.read_csv('dataset.csv')
     df = preprocessing(df)
     col = 'Total Waste (Tons)'
     plot_relational_plot(df)
