@@ -75,7 +75,7 @@ def plot_categorical_plot(df):
     ax.grid(True, linestyle='--', alpha=0.6, which='both', 
             axis='y', color='gray', linewidth=0.5)
     plt.tight_layout()
-    plt.savefig('food_waste_by_category.png')
+    plt.savefig('categorical_plot.png')
     plt.show()
     return
 
@@ -109,7 +109,7 @@ def plot_statistical_plot(df):
     ax.grid(True, linestyle='--', alpha=0.6, which='both', 
             axis='y', color='gray', linewidth=0.5)
     plt.tight_layout()
-    plt.savefig('waste_distribution.png')
+    plt.savefig('statistical_plot.png')
     plt.show()
     return
 
@@ -286,7 +286,7 @@ def plot_fitted_data(data, x, y, model):
 
 
 def main():
-    df = pd.read_csv('dataset.csv')
+    df = pd.read_csv('data.csv', index_col='Year').loc[[2024]]
     df = preprocessing(df)
     col = 'Total Waste (Tons)'
     plot_relational_plot(df)
