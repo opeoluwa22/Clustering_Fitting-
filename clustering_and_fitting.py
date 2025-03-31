@@ -16,15 +16,16 @@ import scipy.stats as ss
 import seaborn as sns
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression
 from matplotlib.colors import ListedColormap
 import warnings
+warnings.filterwarnings("ignore", category=UserWarning)
 
 
 def plot_relational_plot(df):
     """
-    Visualizes the relationship between Total Waste 
+    Visualizes the relationship between Total Waste
     and Economic Loss using a scatter plot.
     """
     fig, ax = plt.subplots(figsize=(10, 6))
@@ -170,19 +171,17 @@ def writing(moments, col):
     return
 
 
-warnings.filterwarnings("ignore", category=UserWarning)
-
 def perform_clustering(df, col1, col2):
     """
     Performs K-means clustering on two specified
     columns and returns clustering results.
     """
     df_clust = df[[col1, col2]].copy()
-    
     # Use StandardScaler for better cluster separation
     scaler = StandardScaler()
     norm = scaler.fit_transform(df_clust)
-    
+
+
     def plot_elbow_method(min_k, max_k, wcss, best_n):
         """
         Plots the elbow method to determine the optimal number of clusters.
@@ -212,7 +211,7 @@ def perform_clustering(df, col1, col2):
         _score = silhouette_score(xy, labels)
         _inertia = kmeans.inertia_
         return _score, _inertia
-        
+
 
     wcss = []
     best_n, best_score = None, -np.inf
@@ -222,9 +221,7 @@ def perform_clustering(df, col1, col2):
         if score > best_score:
             best_n = n
             best_score = score
-        print(f"{n:2g} clusters silhouette score = {score:0.2f}")
-        
-
+        print(f"{n:2g} clusters silhouette score = {score:0.2f}") 
     kmeans = KMeans(n_clusters=best_n, init='k-means++',
                     n_init=50, random_state=42)
     kmeans.fit(norm)
@@ -233,12 +230,11 @@ def perform_clustering(df, col1, col2):
     xkmeans = cen[:, 0]
     ykmeans = cen[:, 1]
     cenlabels = kmeans.predict(kmeans.cluster_centers_)
-
     print(f"Best number of clusters = {best_n:2g}")
     plot_elbow_method(2, 10, wcss, best_n)
-    return labels, df_clust.values, xkmeans, ykmeans, cenlabels 
+    return labels, df_clust.values, xkmeans, ykmeans, cenlabels
 
-    
+
 def plot_clustered_data(labels, data, xkmeans, ykmeans, centre_labels):
     """
     Plots clustered data as a scatter plot with cluster centers highlighted.
@@ -254,8 +250,8 @@ def plot_clustered_data(labels, data, xkmeans, ykmeans, centre_labels):
                cmap=cmap, marker='x', s=100, label='Cluster Centers')
     colorbar = fig.colorbar(scatter, ax=ax)
     colorbar.set_ticks(unique_labels)
-    ax.set_xlabel('Population (Million)') 
-    ax.set_ylabel('Economic Loss (Million $)') 
+    ax.set_xlabel('Population (Million)')
+    ax.set_ylabel('Economic Loss (Million $)')
     plt.title('Clustered Plot', fontsize=14, fontweight='bold', pad=20)
     ax.legend(loc='best')
     plt.savefig('clustering.png')
@@ -272,15 +268,13 @@ def perform_fitting(df, col1, col2):
     y = df[col2].values
     model = LinearRegression()
     model.fit(X, y)
-    
     x_range = np.linspace(X.min(), X.max(), 100).reshape(-1, 1)
     y_pred = model.predict(x_range)
-    
     # Compute residuals
     residuals = y - model.predict(X)
-    std_error = np.std(residuals)  
+    std_error = np.std(residuals)
     return df, x_range, y_pred, model, std_error
-    
+
 
 def plot_fitted_data(data, x, y, model, std_error):
     """
@@ -288,43 +282,30 @@ def plot_fitted_data(data, x, y, model, std_error):
     and confidence intervals.
     """
     fig, ax = plt.subplots(figsize=(10, 6))
-    
     # Scatter plot of actual data
     ax.scatter(data['Total Waste (Tons)'],
                data['Economic Loss (Million $)'],
-                label="Actual Data", color='royalblue',
+               label="Actual Data", color='royalblue',
                alpha=0.5, edgecolors='k')
-    
     # Plot fitted line
     ax.plot(x, y, color='red', label="Fitted Line", linewidth=2)
-    
     # Compute confidence interval (95% confidence)
-    confidence_interval = 1.96 * std_error  
-    
+    confidence_interval = 1.96 * std_error
     upper_bound = y + confidence_interval
     lower_bound = y - confidence_interval
-    
     # Fill area between confidence interval
     ax.fill_between(x.flatten(), lower_bound, upper_bound,
                     color='red', alpha=0.2,
                     label="95% Confidence Interval")
-    
-    # Display equation and R² value
-    slope = model.coef_[0]
-    intercept = model.intercept_
-    r_squared = model.score(data[['Total Waste (Tons)']],
-                            data['Economic Loss (Million $)'])
-    
     ax.set_xlabel('Total Waste (Tons)', fontsize=14,
                   fontweight='bold')
     ax.set_ylabel('Economic Loss (Million $)',
                   fontsize=14, fontweight='bold')
-    ax.set_title(f"Economic Loss (Million $) vs. Total Waste (Tons)", 
+    ax.set_title('Economic Loss (Million $) vs. Total Waste (Tons)',
                  fontsize=16, fontweight='bold', pad=15)
     ax.legend()
     ax.grid(True, linestyle='--', alpha=0.6, which='both',
-                axis='y', color='gray', linewidth=0.5)
-    
+            axis='y', color='gray', linewidth=0.5)
     plt.savefig('fitting.png')
     plt.show()
     return
@@ -346,7 +327,7 @@ def main():
                                       'Economic Loss (Million $)')
     plot_fitted_data(*fitting_results)
     return
-    
+
 
 if __name__ == '__main__':
     main()
