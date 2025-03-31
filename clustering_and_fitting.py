@@ -20,9 +20,11 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from sklearn.linear_model import LinearRegression
 from matplotlib.colors import ListedColormap
 
+
 def plot_relational_plot(df):
     """
-    Visualizes the relationship between Total Waste and Economic Loss using a scatter plot.
+    Visualizes the relationship between Total Waste 
+    and Economic Loss using a scatter plot.
     """
     fig, ax = plt.subplots(figsize=(10, 6))
     # Scatter plot
@@ -36,13 +38,15 @@ def plot_relational_plot(df):
         linewidths=0.8
     )
     # Set axis labels
-    ax.set_xlabel('Total Waste (Tons)', 
+    ax.set_xlabel('Total Waste (Tons)',
                   fontsize=14, fontweight='bold', labelpad=10)
-    ax.set_ylabel('Economic Loss (Million $)', 
+    ax.set_ylabel('Economic Loss (Million $)',
                   fontsize=14, fontweight='bold', labelpad=10)
     # Set plot title
-    ax.set_title('Economic Loss vs. Total Waste', fontsize=16, fontweight='bold', pad=15)
-    ax.grid(True, linestyle='--', alpha=0.6, which='both', color='gray', linewidth=0.5)
+    ax.set_title('Economic Loss vs. Total Waste',
+                 fontsize=16, fontweight='bold', pad=15)
+    ax.grid(True, linestyle='--', alpha=0.6,
+            which='both', color='gray', linewidth=0.5)
     plt.tight_layout()
     plt.savefig('relational_plot.png')
     plt.show()
@@ -51,7 +55,8 @@ def plot_relational_plot(df):
 
 def plot_categorical_plot(df):
     """
-    Plots a bar chart to compare total food waste (in tons) across different food categories.
+    Plots a bar chart to compare total food
+    waste (in tons) across different food categories.
     """
     fig, ax = plt.subplots(figsize=(12, 8))
     # Create the bar plot
@@ -66,13 +71,15 @@ def plot_categorical_plot(df):
         legend=False
     )
     # Set axis labels
-    ax.set_xlabel('Food Category', fontsize=14, fontweight='bold', labelpad=10)
-    ax.set_ylabel('Total Waste (Tons)', fontsize=14, fontweight='bold', labelpad=10)
+    ax.set_xlabel('Food Category', fontsize=14,
+                  fontweight='bold', labelpad=10)
+    ax.set_ylabel('Total Waste (Tons)', fontsize=14,
+                  fontweight='bold', labelpad=10)
     ax.tick_params(axis='x', rotation=45, labelsize=12)
     # Set title
-    ax.set_title('Total Food Waste by Category', 
+    ax.set_title('Total Food Waste by Category',
                  fontsize=18, fontweight='bold', pad=20)
-    ax.grid(True, linestyle='--', alpha=0.6, which='both', 
+    ax.grid(True, linestyle='--', alpha=0.6, which='both',
             axis='y', color='gray', linewidth=0.5)
     plt.tight_layout()
     plt.savefig('categorical_plot.png')
@@ -82,7 +89,7 @@ def plot_categorical_plot(df):
 
 def plot_statistical_plot(df):
     """
-    Visualizes the distribution of average waste per capita 
+    Visualizes the distribution of average waste per capita
     (Kg) across different countries using a box plot.
     """
     fig, ax = plt.subplots(figsize=(12, 8))
@@ -100,13 +107,13 @@ def plot_statistical_plot(df):
         dodge=False
     )
     # Set title and labels
-    ax.set_title('Distribution of Average Waste per Capita by Country', 
+    ax.set_title('Distribution of Average Waste per Capita by Country',
                  fontsize=18, fontweight='bold', pad=20)
     ax.set_xlabel('Country', fontsize=14, fontweight='bold', labelpad=10)
-    ax.set_ylabel('Avg Waste per Capita (Kg)', fontsize=14, 
+    ax.set_ylabel('Avg Waste per Capita (Kg)', fontsize=14,
                   fontweight='bold', labelpad=10)
     ax.tick_params(axis='x', rotation=45, labelsize=12)
-    ax.grid(True, linestyle='--', alpha=0.6, which='both', 
+    ax.grid(True, linestyle='--', alpha=0.6, which='both',
             axis='y', color='gray', linewidth=0.5)
     plt.tight_layout()
     plt.savefig('statistical_plot.png')
@@ -128,8 +135,8 @@ def statistical_analysis(df, col: str):
 
 def preprocessing(df):
     """
-    Prepare the data by detecting missing values, generating summary statistics, 
-    and assessing correlations.
+    Prepare the data by detecting missing values, generating
+    summary statistics, and assessing correlations.
     """
     # Display the first few rows of the data
     print("\nPreview of the Data:")
@@ -162,23 +169,26 @@ def writing(moments, col):
     return
 
 
+warnings.filterwarnings("ignore", category=UserWarning)
 def perform_clustering(df, col1, col2):
     """
-    Performs K-means clustering on two specified columns and returns clustering results.
+    Performs K-means clustering on two specified
+    columns and returns clustering results.
     """
     df_clust = df[[col1, col2]].copy()
-    scaler = MinMaxScaler()
+    
+    # Use StandardScaler for better cluster separation
+    scaler = StandardScaler()
     norm = scaler.fit_transform(df_clust)
-    inv_norm = scaler.inverse_transform(norm)
-
+    
     def plot_elbow_method(min_k, max_k, wcss, best_n):
         """
         Plots the elbow method to determine the optimal number of clusters.
         """
         fig, ax = plt.subplots(dpi=144)
         ax.plot(range(min_k, max_k + 1), wcss, 'kx-')
-        ax.scatter(best_n, wcss[best_n - min_k], 
-                   marker='o', color='red', facecolors='none', s=50)
+        ax.scatter(best_n, wcss[best_n - min_k], marker='o',
+                   color='red', facecolors='none', s=50)
         ax.set_xlabel('k')
         ax.set_xlim(min_k, max_k)
         plt.title('Elbow Plot', fontsize=14, fontweight='bold', pad=20)
@@ -187,16 +197,20 @@ def perform_clustering(df, col1, col2):
         plt.show()
         return
 
+
     def one_silhouette_inertia(n, xy):
         """
-        Computes the silhouette score and inertia for a given number of clusters.
+        Computes the silhouette score and inertia for a
+        given number of clusters.
         """
-        kmeans = KMeans(n_clusters=n, n_init=20, random_state=42)
+        kmeans = KMeans(n_clusters=n, init='k-means++',
+                        n_init=50, random_state=42)
         kmeans.fit(xy)
         labels = kmeans.labels_
         _score = silhouette_score(xy, labels)
         _inertia = kmeans.inertia_
         return _score, _inertia
+        
 
     wcss = []
     best_n, best_score = None, -np.inf
@@ -207,28 +221,23 @@ def perform_clustering(df, col1, col2):
             best_n = n
             best_score = score
         print(f"{n:2g} clusters silhouette score = {score:0.2f}")
+        
 
-
-    kmeans = KMeans(n_clusters=best_n, n_init=20, random_state=42)
+    kmeans = KMeans(n_clusters=best_n, init='k-means++',
+                    n_init=50, random_state=42)
     kmeans.fit(norm)
     labels = kmeans.labels_
-    cluster_centers = kmeans.cluster_centers_
-
     cen = scaler.inverse_transform(kmeans.cluster_centers_)
     xkmeans = cen[:, 0]
     ykmeans = cen[:, 1]
     cenlabels = kmeans.predict(kmeans.cluster_centers_)
 
     print(f"Best number of clusters = {best_n:2g}")
-    one_silhouette_inertia(best_n, norm)
     plot_elbow_method(2, 10, wcss, best_n)
+    return labels, df_clust.values, xkmeans, ykmeans, cenlabels 
 
-    return labels, inv_norm, xkmeans, ykmeans, cenlabels
- 
-import warnings
-warnings.filterwarnings("ignore", category=UserWarning)
-
-def plot_clustered_data(labels, xy, cluster_centers_x, cluster_centers_y, center_labels):
+    
+def plot_clustered_data(labels, data, xkmeans, ykmeans, centre_labels):
     """
     Plots clustered data as a scatter plot with cluster centers highlighted.
     """
@@ -237,52 +246,86 @@ def plot_clustered_data(labels, xy, cluster_centers_x, cluster_centers_y, center
     cmap = ListedColormap(colors)
 
     fig, ax = plt.subplots(dpi=144)
-    scatter = ax.scatter(xy[:, 0], xy[:, 1], c=labels, 
-                         cmap=cmap, marker='o', label='Data Points')
-    ax.scatter(cluster_centers_x, cluster_centers_y, 
-               c=center_labels, cmap=cmap, marker='x', s=100, label='Cluster Centers')
+    scatter = ax.scatter(data[:, 0], data[:, 1],
+                         c=labels, cmap=cmap, marker='o', label='Data Points')
+    ax.scatter(xkmeans, ykmeans, c=centre_labels,
+               cmap=cmap, marker='x', s=100, label='Cluster Centers')
     colorbar = fig.colorbar(scatter, ax=ax)
     colorbar.set_ticks(unique_labels)
-    ax.set_xlabel('Economic Loss (Million $)')
-    ax.set_ylabel('Avg Waste per Capita (Kg)')
-    ax.set_xscale('log')
+    ax.set_xlabel('Population (Million)') 
+    ax.set_ylabel('Economic Loss (Million $)') 
     plt.title('Clustered Plot', fontsize=14, fontweight='bold', pad=20)
     ax.legend(loc='best')
     plt.savefig('clustering.png')
     plt.show()
+    return
+
 
 def perform_fitting(df, col1, col2):
     """
-    Fits a linear regression model between two columns.
+    Fits a linear regression model between two columns
+    and computes error margins.
     """
     X = df[[col1]].values
     y = df[col2].values
     model = LinearRegression()
     model.fit(X, y)
+    
     x_range = np.linspace(X.min(), X.max(), 100).reshape(-1, 1)
     y_pred = model.predict(x_range)
-    return df, x_range, y_pred, model
+    
+    # Compute residuals
+    residuals = y - model.predict(X)
+    std_error = np.std(residuals)  
+    return df, x_range, y_pred, model, std_error
+    
 
-def plot_fitted_data(data, x, y, model):
+def plot_fitted_data(data, x, y, model, std_error):
     """
-    Plots actual data points and fitted regression line.
+    Plots actual data points, fitted regression line,
+    and confidence intervals.
     """
     fig, ax = plt.subplots(figsize=(10, 6))
-    ax.scatter(data['Total Waste (Tons)'], data['Economic Loss (Million $)'],
-                label="Actual Data", color='royalblue', alpha=0.5, edgecolors='k')
+    
+    # Scatter plot of actual data
+    ax.scatter(data['Total Waste (Tons)'],
+               data['Economic Loss (Million $)'],
+                label="Actual Data", color='royalblue',
+               alpha=0.5, edgecolors='k')
+    
+    # Plot fitted line
     ax.plot(x, y, color='red', label="Fitted Line", linewidth=2)
+    
+    # Compute confidence interval (95% confidence)
+    confidence_interval = 1.96 * std_error  
+    
+    upper_bound = y + confidence_interval
+    lower_bound = y - confidence_interval
+    
+    # Fill area between confidence interval
+    ax.fill_between(x.flatten(), lower_bound, upper_bound,
+                    color='red', alpha=0.2,
+                    label="95% Confidence Interval")
+    
+    # Display equation and R² value
     slope = model.coef_[0]
     intercept = model.intercept_
-    r_squared = model.score(data[['Total Waste (Tons)']], data['Economic Loss (Million $)'])
-    ax.set_xlabel('Total Waste (Tons)', fontsize=14, fontweight='bold')
-    ax.set_ylabel('Economic Loss (Million $)', fontsize=14, fontweight='bold')
+    r_squared = model.score(data[['Total Waste (Tons)']],
+                            data['Economic Loss (Million $)'])
+    
+    ax.set_xlabel('Total Waste (Tons)', fontsize=14,
+                  fontweight='bold')
+    ax.set_ylabel('Economic Loss (Million $)',
+                  fontsize=14, fontweight='bold')
     ax.set_title(f"Economic Loss (Million $) vs. Total Waste (Tons)", 
                  fontsize=16, fontweight='bold', pad=15)
     ax.legend()
     ax.grid(True, linestyle='--', alpha=0.6, which='both',
                 axis='y', color='gray', linewidth=0.5)
-    plt.savefig('fitting_improved.png', dpi=300, bbox_inches='tight')
+    
+    plt.savefig('fitting.png')
     plt.show()
+    return
 
 
 def main():
@@ -294,11 +337,14 @@ def main():
     plot_categorical_plot(df)
     moments = statistical_analysis(df, col)
     writing(moments, col)
-    clustering_results = perform_clustering(df, 'Economic Loss (Million $)', 'Avg Waste per Capita (Kg)')
+    clustering_results = perform_clustering(df, 'Population (Million)',
+                                            'Economic Loss (Million $)')
     plot_clustered_data(*clustering_results)
-    fitting_results = perform_fitting(df, 'Total Waste (Tons)', 'Economic Loss (Million $)')
+    fitting_results = perform_fitting(df, 'Total Waste (Tons)',
+                                      'Economic Loss (Million $)')
     plot_fitted_data(*fitting_results)
     return
+    
 
 if __name__ == '__main__':
     main()
