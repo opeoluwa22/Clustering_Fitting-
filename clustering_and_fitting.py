@@ -19,6 +19,7 @@ from sklearn.metrics import silhouette_score
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from sklearn.linear_model import LinearRegression
 from matplotlib.colors import ListedColormap
+import warnings
 
 
 def plot_relational_plot(df):
@@ -170,6 +171,7 @@ def writing(moments, col):
 
 
 warnings.filterwarnings("ignore", category=UserWarning)
+
 def perform_clustering(df, col1, col2):
     """
     Performs K-means clustering on two specified
