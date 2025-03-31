@@ -180,8 +180,6 @@ def perform_clustering(df, col1, col2):
     # Use StandardScaler for better cluster separation
     scaler = StandardScaler()
     norm = scaler.fit_transform(df_clust)
-
-
     def plot_elbow_method(min_k, max_k, wcss, best_n):
         """
         Plots the elbow method to determine the optimal number of clusters.
@@ -197,8 +195,7 @@ def perform_clustering(df, col1, col2):
         plt.savefig('elbow_plot.png')
         plt.show()
         return
-
-
+     
     def one_silhouette_inertia(n, xy):
         """
         Computes the silhouette score and inertia for a
@@ -212,7 +209,6 @@ def perform_clustering(df, col1, col2):
         _inertia = kmeans.inertia_
         return _score, _inertia
 
-
     wcss = []
     best_n, best_score = None, -np.inf
     for n in range(2, 11):
@@ -221,7 +217,7 @@ def perform_clustering(df, col1, col2):
         if score > best_score:
             best_n = n
             best_score = score
-        print(f"{n:2g} clusters silhouette score = {score:0.2f}") 
+        print(f"{n:2g} clusters silhouette score = {score:0.2f}")
     kmeans = KMeans(n_clusters=best_n, init='k-means++',
                     n_init=50, random_state=42)
     kmeans.fit(norm)
